@@ -1,4 +1,41 @@
-export const MEN_TABLE = [
+export type TrackEvent =
+  | '60m'
+  | '100m'
+  | '200m'
+  | '400m'
+  | '800m'
+  | '1000m'
+  | '1500m'
+  | '60mH'
+  | '100mH'
+  | '110mH';
+
+export type JumpEvent = 'High Jump' | 'Pole Vault' | 'Long Jump';
+
+export type ThrowEvent = 'Shot' | 'Discus' | 'Javelin';
+
+export type FieldEvent = JumpEvent | ThrowEvent;
+
+export enum Gender {
+  men = 'men',
+  women = 'women',
+}
+
+export type TableHeader = readonly ['name', 'a', 'b', 'c'];
+export type TableRow = readonly [
+  TrackEvent | FieldEvent,
+  number,
+  number,
+  number
+];
+export type TableMapping = {
+  readonly name: string;
+  readonly a: number;
+  readonly b: number;
+  readonly c: number;
+};
+
+export const MEN_TABLE: readonly (TableHeader | TableRow)[] = [
   ['name', 'a', 'b', 'c'],
   ['100m', 25.4347, 18.0, 1.81],
   ['200m', 5.8425, 38.0, 1.81],
@@ -17,7 +54,7 @@ export const MEN_TABLE = [
   ['60mH', 20.5173, 15.5, 1.92],
 ];
 
-export const WOMEN_TABLE = [
+export const WOMEN_TABLE: readonly (TableHeader | TableRow)[] = [
   ['name', 'a', 'b', 'c'],
   ['200m', 4.99087, 42.5, 1.81],
   ['800m', 0.11193, 254.0, 1.88],
@@ -37,8 +74,8 @@ export const WOMEN_TABLE = [
 ];
 
 function convertRowToConstantsMap(
-  row: readonly any[],
-  header: readonly (string | number)[]
+  row: TableRow | TableHeader,
+  header: TableRow | TableHeader
 ) {
   return row
     .map((value, index) => ({
@@ -47,13 +84,19 @@ function convertRowToConstantsMap(
     .reduce((a, b) => ({ ...a, ...b }));
 }
 
-export function getMenConstants(eventName: string) {
+/**
+ * Get the official men's scoring tables per event.
+ */
+export function getMensConstants(eventName: TrackEvent | FieldEvent) {
   const header = MEN_TABLE[0];
   const row = MEN_TABLE.find((row) => row[0] === eventName);
   return convertRowToConstantsMap(row, header);
 }
 
-export function getWomenConstants(eventName: string) {
+/**
+ * Get the official women's scoring tables per event.
+ */
+export function getWomensConstants(eventName: TrackEvent | FieldEvent) {
   const header = WOMEN_TABLE[0];
   const row = WOMEN_TABLE.find((row) => row[0] === eventName);
   return convertRowToConstantsMap(row, header);
